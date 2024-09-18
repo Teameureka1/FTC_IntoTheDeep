@@ -55,6 +55,7 @@ import com.qualcomm.robotcore.util.Range;
 public class MyBasicOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
+    //these are my motors :)
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
