@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp(name="TeleOp Hardware Test", group="Robot")
+@TeleOp(name="TeleOp", group="Robot")
 
 public class NewTeleOp extends LinearOpMode {
 
@@ -23,7 +23,8 @@ public class NewTeleOp extends LinearOpMode {
 
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
-
+        int elbow = 3;
+        boolean claw = true;
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses START)
         waitForStart();
@@ -35,56 +36,35 @@ public class NewTeleOp extends LinearOpMode {
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
             // This way it's also easy to just drive straight, or just turn.
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = gamepad1.left_stick_x;  // Note: pushing stick forward gives negative value
-            double lateral = -gamepad1.left_stick_y;
+            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
-            double slideForward = gamepad2.left_stick_y;
-            double slideBack = -gamepad2.left_stick_y;
-            int elbow = 2;
-            //double armTransport =
-            //double armCollect =
-            double claw = gamepad2.right_stick_x;
-            boolean buttonX = gamepad2.x;
-            boolean buttonB = gamepad2.b;
+            double slidePower = -gamepad2.left_stick_y;
+            double speed = gamepad1.right_trigger;
 
-            if(gamepad2.dpad_down){
-                if(elbow != 0){
-                    elbow -= 1;
-                }
+
+            if (gamepad2.left_bumper){//open
+                claw = false;
             }
-            if(gamepad2.dpad_up){
-                if(elbow != 2){
-                    elbow += 1;
-                }
+            if (gamepad2.right_bumper){//closed
+                claw = true;
             }
 
-            // Combine drive and turn for blended motion. Use RobotHardware class
-            robot.driveRobot(axial, lateral, yaw, slideForward, slideBack, claw, elbow, buttonX, buttonB);
+            if(gamepad2.dpad_left){ //up
+                elbow = 2;
+            }
+            if(gamepad2.dpad_up){ //middle
+                elbow = 1;
+            }
+            if(gamepad2.dpad_right){ //down
+                elbow = 0;
+            }
 
-            /*
-            // Use gamepad left & right Bumpers to open and close the claw
-            // Use the SERVO constants defined in RobotHardware class.
-            // Each time around the loop, the servos will move by a small amount.
-            // Limit the total offset to half of the full travel range
-            if (gamepad1.right_bumper)
-                handOffset += robot.HAND_SPEED;
-            else if (gamepad1.left_bumper)
-                handOffset -= robot.HAND_SPEED;
-            handOffset = Range.clip(handOffset, -0.5, 0.5);
 
-            // Move both servos to new position.  Use RobotHardware class
-            robot.setHandPositions(handOffset);
+            // Use RobotHardware Class
+            robot.driveRobot(axial, lateral, yaw, speed); //Drive robot
+            robot.armRobot(slidePower, elbow, claw); //Arm operations
 
-            // Use gamepad buttons to move arm up (Y) and down (A)
-            // Use the MOTOR constants defined in RobotHardware class.
-            if (gamepad1.y)
-                arm = robot.ARM_UP_POWER;
-            else if (gamepad1.a)
-                arm = robot.ARM_DOWN_POWER;
-            else
-                arm = 0;
-
-            robot.setArmPower(arm);*/
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -95,6 +75,10 @@ public class NewTeleOp extends LinearOpMode {
             telemetry.addData("Arm Up/Down", "Y & A Buttons");
             telemetry.addData("Hand Open/Closed", "Left and Right Bumpers");
             telemetry.addData("-", "-------");
+            telemetry.addData("Axial", "%.2f", axial);
+            telemetry.addData("Lateral", "%.2f", lateral);
+            telemetry.addData("Yaw", "%.2f", yaw);
+            telemetry.addData("Power", "%.2f", speed);
 /*
             telemetry.addData("Drive Power", "%.2f", );
             telemetry.addData("Turn Power",  "%.2f", turn);

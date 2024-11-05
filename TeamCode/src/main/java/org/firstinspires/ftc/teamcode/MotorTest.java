@@ -89,8 +89,8 @@ public class MotorTest extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
+            double axial   = gamepad1.left_stick_x;  // Note: pushing stick forward gives negative value
+            double lateral = -gamepad1.left_stick_y;
             double yaw     =  gamepad1.right_stick_x;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
@@ -131,10 +131,10 @@ public class MotorTest extends LinearOpMode {
 
 
             // Send calculated power to wheels
-            robot.leftFrontDrive.setPower(leftFrontPower);
-            robot.rightFrontDrive.setPower(rightFrontPower);
-            robot.leftBackDrive.setPower(leftBackPower);
-            robot.rightBackDrive.setPower(rightBackPower);
+            robot.fl.setPower(leftFrontPower);
+            robot.fr.setPower(rightFrontPower);
+            robot.bl.setPower(leftBackPower);
+            robot.br.setPower(rightBackPower);
 
 
             // Show the elapsed game time and wheel power.
