@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp(name="TeleOp", group="Robot")
+@TeleOp(name="TeleOpBad", group="Robot")
 
 public class NewTeleOp extends LinearOpMode {
 
@@ -24,10 +24,12 @@ public class NewTeleOp extends LinearOpMode {
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
         int elbow = 3;
+        int armPos = 0;
         boolean claw = true;
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses START)
         waitForStart();
+        runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -43,11 +45,21 @@ public class NewTeleOp extends LinearOpMode {
             double speed = gamepad1.right_trigger;
 
 
-            if (gamepad2.left_bumper){//open
-                claw = false;
+            if(gamepad2.dpad_down){
+                robot.arm.setTargetPosition(126);
+                robot.arm.setPower(0.4);
             }
-            if (gamepad2.right_bumper){//closed
-                claw = true;
+            if(gamepad2.dpad_up){
+                robot.arm.setTargetPosition(50);
+                robot.arm.setPower(0.4);
+            }
+
+
+            if (gamepad2.left_bumper){ //open
+                robot.openClaw();
+            }
+            if (gamepad2.right_bumper){ //closed
+                robot.closeClaw();
             }
 
             if(gamepad2.dpad_left){ //up
@@ -60,10 +72,9 @@ public class NewTeleOp extends LinearOpMode {
                 elbow = 0;
             }
 
-
+            robot.slideRobot(slidePower);
             // Use RobotHardware Class
             robot.driveRobot(axial, lateral, yaw, speed); //Drive robot
-            robot.armRobot(slidePower, elbow, claw); //Arm operations
 
 
             // Send telemetry messages to explain controls and show robot status
@@ -88,6 +99,7 @@ public class NewTeleOp extends LinearOpMode {
 
             // Pace this loop so hands move at a reasonable speed.
             sleep(50);
+            idle();
         }
     }
 }

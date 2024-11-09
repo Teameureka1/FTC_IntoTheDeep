@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 public class RobotHardwareBruce {
@@ -15,18 +17,19 @@ public class RobotHardwareBruce {
     public DcMotor fr = null;
     public DcMotor bl = null;
     public DcMotor br = null;
-    public DcMotor slides = null;
+    public DcMotor slideMotor = null;
 
-    public Servo elbowServo = null;
+
+    public DcMotor arm = null;
+    private double motorArmZeroPower = 0.0;
+    private double motorArmPower = 1.0;
+    private int motorArmPositionOne = 10;
+    private int motorArmPositionTwo = 90;
+
+
     public Servo leftclawServo = null;
     public Servo rightclawServo = null;
-
-    public enum directions{
-        FORWARD,
-        BACKWARD,
-        RIGHT,
-        LEFT
-    }
+    public Servo reachServo = null;
 
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
@@ -48,14 +51,51 @@ public class RobotHardwareBruce {
         bl.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
 
-        slides = myOpMode.hardwareMap.get(DcMotor.class, "slide"); //Slide
-        elbowServo = myOpMode.hardwareMap.get(Servo.class, "arm"); //Arm
+
         leftclawServo = myOpMode.hardwareMap.get(Servo.class, "leftClaw");
         rightclawServo = myOpMode.hardwareMap.get(Servo.class, "rightClaw");
+        reachServo = myOpMode.hardwareMap.get(Servo.class, "reach");
+        slideMotor = myOpMode.hardwareMap.get(DcMotor.class, "slide");
+
+
+
+        //initMotorArm();
+
 
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
+
+    }
+
+    public void initMotorArm(){
+        arm = myOpMode.hardwareMap.get(DcMotor.class, "arm"); //Arm
+        arm.setDirection(DcMotorSimple.Direction.FORWARD);
+        arm.setPower(motorArmZeroPower);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void runMotorArmToPosition(int position){
+        arm.setTargetPosition(position);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(motorArmPower);
+        while(arm.isBusy()){
+            myOpMode.telemetry.addData("Arm is busy", ".2f", "");
+        }
+        //arm.setPower(motorArmZeroPower);
+    }
+
+    public void abc(int position){
+        while(arm.getCurrentPosition() != position){
+            while(arm.getCurrentPosition() > position){
+                arm.setPower(-0.5);
+            }
+            while(arm.getCurrentPosition() < position){
+                arm.setPower(0.5);
+            }
+        }
     }
 
     public void driveRobot(double axial, double lateral, double yaw, double speed) {
@@ -69,38 +109,27 @@ public class RobotHardwareBruce {
         fr.setPower(frPower);
         bl.setPower(blPower);
         br.setPower(brPower);
+    }
+
+
+    public void slideRobot(double slidePower){
+        slideMotor.setPower(slidePower);
+    }
+
+    public void armRobot(){
 
     }
 
-    public void armRobot(double slidePower, int elbow, boolean claw){
-        if(elbow == 0){
-            elbowServo.setPosition(0); //Collect
-        }
-        else if(elbow == 1){
-            elbowServo.setPosition(0.3); //Store
-        }
-        else if(elbow == 2){
-            elbowServo.setPosition(0.6); //Storage
-        }
-
-        //Claw controls based on bool input
-        if(claw){
-            closeClaw(leftclawServo, rightclawServo);
-        }
-        else{
-            openClaw(leftclawServo, rightclawServo);
-        }
-
-        slides.setPower(slidePower); //set slide power
+    public void closeClaw() {
+        leftclawServo.setPosition(0.4);
+        rightclawServo.setPosition(0.6);
+        //Wait here for a second (somehow)
+        leftclawServo.setPosition(leftclawServo.getPosition());
+        rightclawServo.setPosition(rightclawServo.getPosition());
     }
 
-    public void closeClaw(Servo left, Servo right) {
-        left.setPosition(0.4);
-        right.setPosition(0.6);
-    }
-
-    public void openClaw(Servo left, Servo right) {
-        left.setPosition(0.5);
-        right.setPosition(0.5);
+    public void openClaw() {
+        leftclawServo.setPosition(0.5);
+        rightclawServo.setPosition(0.5);
     }
 }

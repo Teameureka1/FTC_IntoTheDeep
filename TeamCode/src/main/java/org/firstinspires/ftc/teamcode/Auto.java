@@ -1,17 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Bundle;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Auto", group="Robot")
+import java.util.ArrayList;
+
+@Autonomous(name="AutoBad", group="Robot")
 
 
 public class Auto extends LinearOpMode {
     RobotHardwareBruce robot = new RobotHardwareBruce(this); //use robot.
     private ElapsedTime runtime = new ElapsedTime(); //define runtime
 
-    static final double     FORWARD_SPEED = 0.5;
+    static final double     FORWARD_SPEED = 0;
     static final double     TURN_SPEED    = 0.4;
     int yaw;
 
@@ -24,17 +29,39 @@ public class Auto extends LinearOpMode {
 
         waitForStart(); // Wait for driver to press START
 
-        //start robot driving here
-        rotate(2, 1);
-        forward(3);
-        rotate(2, 0);
-        forward(3);
+        //robot.abc(50);
+        forward(1000);
+        // Start robot driving here
+        //PLACE HOLDER TIMES USE CAUTION
+        //right(1);
+        //forward(1);
+        //Grab drop Grab Drop Grab Drop
+
+        //sleep(100);
+
+        //right(2);
+        //rotate(2, 0);
+        //forward(1);
 
 
     }
 
-    //Make open/close claw
-    //Slide controls for auto
+    //Remember: robot.closeClaw() and robot.openClaw()
+
+
+    public void slidePower(int direction, double timeMoving){
+        if(direction == 0){
+            //robot.slide(0.7);
+        }
+        else{
+            //robot.slide(-0.7);
+        }
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < timeMoving)){
+            //do telementry stuff here
+        }
+
+    }
 
     public void forward(double timeMoving){
         robot.driveRobot(1,0,0,FORWARD_SPEED);
