@@ -18,13 +18,9 @@ public class Hardware {
 
     public double leftClosed1 = 0.53;
     public double rightClosed1 = 0.47;
-    public double leftClosed2 = 0.6;
-    public double rightClosed2 = 0.4;
+    public double leftClosed2 = 0.61;
+    public double rightClosed2 = 0.39;
 
-    public int storagePosition = -90;
-    public int upRight = -45;
-    public int level = 24;
-    public int collectPosition = 31;
 
     //Define Motors and Servos
     public DcMotor fl = null;
@@ -33,7 +29,10 @@ public class Hardware {
     public DcMotor br = null;
 
     public DcMotor slideMotor = null;
-    public DcMotor armMotor = null;
+
+
+    public DcMotor testMotor = null;
+
 
     public Servo leftClawServo = null;
     public Servo rightClawServo = null;
@@ -49,7 +48,11 @@ public class Hardware {
         bl = myOpMode.hardwareMap.get(DcMotor.class, "BL"); //Back Left
         br = myOpMode.hardwareMap.get(DcMotor.class, "BR"); //Back Right
         slideMotor = myOpMode.hardwareMap.get(DcMotor.class, "slide");
-        armMotor = myOpMode.hardwareMap.get(DcMotor.class, "arm");
+
+        testMotor = myOpMode.hardwareMap.get(DcMotor.class, "arm");
+
+        testMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        testMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //Set motor directions
         fl.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -92,7 +95,8 @@ public class Hardware {
             fr.setPower(0);
             bl.setPower(0);
             br.setPower(0);
-        } else {
+        }
+        else {
             fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -114,9 +118,6 @@ public class Hardware {
             rightClawServo.setPosition(rightClosed2);
         }
         slideMotor.setPower(slidePower);
-
-
-        myOpMode.telemetry.addData("Arm Pos: ", armMotor.getCurrentPosition());
     }
 
 }
